@@ -1,9 +1,9 @@
 <?php
-// Name: hw6/index.php
+// Name: hw7/index.php
 // Author: Shubham Mudgal
-// Purpose: Home page for Tolkien application
+// Purpose: Home page for Tolkien application using HTTPS
 // Version: 1.0
-// Date: 03/06/2016
+// Date: 03/10/2016
 
 session_start();
 include_once('header.php');
