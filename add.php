@@ -43,17 +43,15 @@ else
 		$whiteListIPAddress = whiteList();
 		$isWhiteListIP = in_array($IPAddress,$whiteListIPAddress);
 		$attemptCount = incorrectAttempts($db,$IPAddress);
-	//	if(!$isWhiteListIP  && $attemptCount >= 5)
-		if($attemptCount >= 5)
+		if(!$isWhiteListIP  && $attemptCount >= 5)
 		{
 			logLogin($db, $postUser, "failure");
 			header("Location:/hw7/login.php");		
 		}
-		if( $attemptCount < 5)
-		{
-			authenticate($db, $postUser, $postPass);
-			addCharacterMenu($s, $attemptCount, $whiteListIPAddress);
-		}
+		
+		authenticate($db, $postUser, $postPass);
+		addCharacterMenu($s, $attemptCount, $whiteListIPAddress);
+		
 }
 
 function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
