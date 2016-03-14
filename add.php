@@ -263,7 +263,7 @@ function footer()
 	echo "<div align=center><a href=add.php?s=90>Add New User|</a>
  			<a href=add.php?s=92 border=\"1\" >Show Users List|</a>
  			<a href=add.php?s=93>Update Password</a><br>
- 			<a href=add.php?s=96>Login Report</a><br>
+ 			<a href=add.php?s=96>Failed Login Report</a><br>
  			<a href=add.php?s=95>Logout</a></div>";
  	}
  	else
@@ -512,7 +512,7 @@ function loginFailureReport()
 	{				
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_bind_result($stmt, $IPAddress, $count);
-		echo "<table><tr>Login Failure Details</tr>
+		echo "<table border-spacing: 50px 0;><tr>Login Failure Details</tr>
 				<tr><td><b>IP Address</b></td>
 					<td><b>Number of Failed Attempts</b></td></tr>";
 		while(mysqli_stmt_fetch($stmt))
