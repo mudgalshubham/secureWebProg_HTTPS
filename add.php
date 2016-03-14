@@ -56,7 +56,7 @@ function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
 {	global $db, $cname, $side, $race, $cid,$url, $IPAddress ;
 	switch($s)
 	{
-		case 5:  $IPAddress = $_SERVER['REMOTE_ADDR']; 
+		case 5: /* $IPAddress = $_SERVER['REMOTE_ADDR']; 
 				echo "Attempt failure count: ".$attemptCount." IPwhitelist : ".$whiteListIPAddress. "IPadd= ". $IPAddress;
 				$whiteListIPAddress = whiteList();
 				for($i=0; $i <sizeof($whiteListIPAddress); $i++)
@@ -68,7 +68,7 @@ function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
 					echo "is it there = ".$isWhiteListIP;
 				$attemptCount = incorrectAttempts($db,$IPAddress);
 				echo "attemptcount = ".$attemptCount;
-				
+				*/
 				if(is_numeric($s)) addCharacterForm(); break;
 
 		case 6:	 if(is_numeric($s)) addCharacterAndPicturesForm(); break;
