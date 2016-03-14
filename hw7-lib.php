@@ -30,7 +30,6 @@ function connect(&$db){
 
 function whiteList(){
 	$ipAddressArray = array();
-	array_push($ipAddressArray,'128.138.65.95');
 	array_push($ipAddressArray,'198.18.2.70');
 	return $ipAddressArray;
 }
