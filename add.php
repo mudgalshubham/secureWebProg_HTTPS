@@ -46,6 +46,7 @@ else
 	//	if(!$isWhiteListIP  && $attemptCount >= 5)
 		if($attemptCount >= 5)
 		{
+			logLogin($db, $postUser, "failure");
 			header("Location:/hw7/login.php");		
 		}
 		if( $attemptCount < 5)
