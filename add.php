@@ -39,21 +39,22 @@ else
 		$IPAddress = $_SERVER['REMOTE_ADDR']; 
 		$whiteListIPAddress = whiteList();
 		$isWhiteListIP = in_array($IPAddress,$whiteListIPAddress);
-		$attempCount = incorrectAttempts($db,$IPAddress);
-		if(!$isWhiteListIP  && $attempCount >= 5)
+		$attemptCount = incorrectAttempts($db,$IPAddress);
+		if(!$isWhiteListIP  && $attemptCount >= 5)
 		{
 			header("Location:/hw7/login.php");		
 		}
 		
 		authenticate($db, $postUser, $postPass);
-		addCharacterMenu($s);
+		addCharacterMenu($s, $attemptCount);
 }
 
-function addCharacterMenu($s)
+function addCharacterMenu($s, $attemptCount)
 {	global $db, $cname, $side, $race, $cid,$url ;
 	switch($s)
 	{
-		case 5:  if(is_numeric($s)) addCharacterForm(); break;
+		case 5:  echo "Attempt failure count: ".$attemptCount." IPwhitelist : ".$whiteListIPAddress;
+				if(is_numeric($s)) addCharacterForm(); break;
 
 		case 6:	 if(is_numeric($s)) addCharacterAndPicturesForm(); break;
 
