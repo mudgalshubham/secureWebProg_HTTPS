@@ -184,24 +184,44 @@ function addUsers()
 {
 	global $db, $newuname, $newpass, $email;
 	connect($db);
-	$newuname=mysqli_real_escape_string($db,$newuname);
-	$newpass=mysqli_real_escape_string($db,$newpass);
-	$email=mysqli_real_escape_string($db,$email);
-				
-	$salt = rand(50,10000);
-	$hash_salt=hash('sha256',$salt);
-	$hash_pass=hash('sha256',$newpass.$hash_salt);
 	
-	if($stmt = mysqli_prepare($db, "insert into users set userid='', username=?, password=?, email=?, salt=?"))
-    {
-            mysqli_stmt_bind_param($stmt, "ssss", $newuname,$hash_pass, $email, $hash_salt);
+	if($stmt = mysqli_prepare($db, "select userid from users where username=?"))
+	{
+		mysqli_stmt_bind_param($stmt, "s", $newuname);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $userId);
+		while(mysqli_stmt_fetch($stmt))
+		{
+			$userId =htmlspecialchars($userId);
+		}
+		mysqli_stmt_close($stmt);
+	}
+	
+	if(!$userId == null)
+	{	
+		$newuname=mysqli_real_escape_string($db,$newuname);
+		$newpass=mysqli_real_escape_string($db,$newpass);
+		$email=mysqli_real_escape_string($db,$email);
+				
+		$salt = rand(50,10000);
+		$hash_salt=hash('sha256',$salt);
+		$hash_pass=hash('sha256',$newpass.$hash_salt);
+	
+		if($stmt = mysqli_prepare($db, "insert into users set userid='', username=?, password=?, email=?, salt=?"))
+    	{
+    	    mysqli_stmt_bind_param($stmt, "ssss", $newuname,$hash_pass, $email, $hash_salt);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
             echo "Added new user " . $newuname;
-  	}
-  	else
-  		echo "Error in insertion!";
-}       
+  		}
+  		else
+  			echo "Error in insertion!";
+	}
+	else 
+  		echo "Invalid Data";
+}
+
+	       
 
 function addUsersForm()
 {
@@ -222,8 +242,9 @@ function footer()
 	if(isAdmin())
 	{
 	echo "<div align=center><a href=add.php?s=90>Add New User|</a>
- 			<a href=add.php?s=92>Show Users List|</a>
+ 			<a href=add.php?s=92 border=1 >Show Users List|</a>
  			<a href=add.php?s=93>Update Password</a><br>
+ 			<a href=add.php?s=96>Login Report</a><br>
  			<a href=add.php?s=95>Logout</a></div>";
  	}
  	else
