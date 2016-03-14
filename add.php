@@ -66,6 +66,8 @@ function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
 				$isWhiteListIP = in_array($IPAddress,$whiteListIPAddress);
 				if($isWhiteListIP)
 					echo "is it there = ".$isWhiteListIP;
+				$attemptCount = incorrectAttempts($db,$IPAddress);
+				echo "attemptcount = ".$attemptCount;
 				
 				if(is_numeric($s)) addCharacterForm(); break;
 
