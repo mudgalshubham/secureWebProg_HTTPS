@@ -3,11 +3,11 @@
 // Author: Shubham Mudgal
 // Purpose: Home page for Tolkien application using HTTPS
 // Version: 1.0
-// Date: 03/10/2016
+// Date: 03/13/2016
 
 session_start();
 include_once('header.php');
-include_once('/var/www/html/hw6/hw6-lib.php');
+include_once('/var/www/html/hw7/hw7-lib.php');
 
 isset($_REQUEST['s'])?$s=strip_tags($_REQUEST['s']):$s="";
 isset($_REQUEST['sid'])?$sid=strip_tags($_REQUEST['sid']):$sid="";

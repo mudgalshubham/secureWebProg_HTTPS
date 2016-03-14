@@ -1,10 +1,10 @@
 <?php
 
-// Name: hw6/login.php
+// Name: hw7/login.php
 // Author: Shubham Mudgal
 // Purpose: File to show login form
 // Version: 1.0
-// Date: 03/06/2016
+// Date: 03/13/2016
 
 session_start();
 include_once('header.php');
@@ -20,7 +20,7 @@ if(!isset($_SESSION['authenticated']))							//Shows login form only if session 
 		</div> ";
 }
 else 
-	header("Location:/hw6/add.php");							// If user is already is already logged in then redirects to the add character page
+	header("Location:/hw7/add.php");							// If user is already is already logged in then redirects to the add character page
 		
 ?>
 		

@@ -1,10 +1,10 @@
 <?php
 
-// Name: hw6/header.php
+// Name: hw7/header.php
 // Author: Shubham Mudgal
 // Purpose: Header file for Tolkien application
 // Version: 1.0
-// Date: 03/06/2016
+// Date: 03/13/2016
 
 echo "<html><head></head><body>
  		<div align=center><a href=index.php>Story List|</a>

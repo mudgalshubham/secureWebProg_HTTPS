@@ -1,13 +1,13 @@
 <?php
-// Name: hw6/add.php
+// Name: hw7/add.php
 // Author: Shubham Mudgal
 // Purpose: Adding characters to Tolkien database
 // Version: 1.0
-// Date: 03/06/2016
+// Date: 03/13/2016
 
 session_start();
 include_once('header.php');
-include_once('/var/www/html/hw6/hw6-lib.php');
+include_once('/var/www/html/hw7/hw7-lib.php');
 
 isset($_REQUEST['s'])?$s=strip_tags($_REQUEST['s']):$s="";
 isset($_REQUEST['postUser'])?$postUser=strip_tags($_REQUEST['postUser']):$postUser="";
@@ -33,8 +33,18 @@ else
 {		
 	if($postUser == null)
 		{	
-			header("Location:/hw6/login.php");
+			header("Location:/hw7/login.php");
 		}
+		
+		$IPAddress = $_SERVER['REMOTE_ADDR']; 
+		$whiteListIPAddress = whiteList();
+		$isWhiteListIP = in_array($IPAddress,$whiteListIPAddress);
+		$attempCount = incorrectAttempts($db,$IPAddress);
+		if(!$isWhiteListIP  && $attempCount >= 5)
+		{
+			header("Location:/hw7/login.php");		
+		}
+		
 		authenticate($db, $postUser, $postPass);
 		addCharacterMenu($s);
 }
@@ -85,9 +95,15 @@ function addCharacterMenu($s)
 				 
 		case 95: // Logout
 				 session_destroy();
-				 header("Location: /hw6/login.php");
+				 header("Location: /hw7/login.php");
 				 break;
 		
+		case 96: if(isAdmin())
+					loginFailureReport();
+				 else
+				 	echo "User not authorized to use this functionality";
+				 break;
+				 
 		default: addCharacterForm(); break;
 	}
 	
@@ -98,23 +114,40 @@ function updatePassword()
 {
 	global $db, $newuname, $newpass;
 	connect($db);
-	$newuname=mysqli_real_escape_string($db,$newuname);
-	$newpass=mysqli_real_escape_string($db,$newpass);
-				
-	$salt = rand(50,10000);
-	$hash_salt=hash('sha256',$salt);
-	$hash_pass=hash('sha256',$newpass.$hash_salt);
 	
-	if($stmt = mysqli_prepare($db, "update users set salt =?, password=? where username=?"))
-    {
+	if($stmt = mysqli_prepare($db, "select userid from users where username=?"))
+	{
+		mysqli_stmt_bind_param($stmt, "s", $newuname);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $userId);
+		while(mysqli_stmt_fetch($stmt))
+		{
+			$userId =htmlspecialchars($userId);
+		}
+		mysqli_stmt_close($stmt);
+	}
+	
+	if(!$userId == null)
+	{	
+		$newuname=mysqli_real_escape_string($db,$newuname);
+		$newpass=mysqli_real_escape_string($db,$newpass);
+				
+		$salt = rand(50,10000);
+		$hash_salt=hash('sha256',$salt);
+		$hash_pass=hash('sha256',$newpass.$hash_salt);
+		
+		if($stmt = mysqli_prepare($db, "update users set salt =?, password=? where username=?"))
+   		{
             mysqli_stmt_bind_param($stmt, "sss", $hash_salt ,$hash_pass, $newuname);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
             echo "Password updated for user " . $newuname;
+  		}
+  		else
+  			echo "Error in modification of password!";
   	}
-  	else
-  		echo "Error in modification of password!";
-  		
+  	else 
+  		echo "Invalid Data";
 }
 
 function updatePasswordForm()
@@ -333,28 +366,28 @@ if(is_numeric($cid))
 	$bookTitleArray = array();
 
 	if($stmt = mysqli_prepare($db, "select bookid,title from books where bookid not in (select b.bookid from books as b,appears as a  where b.bookid = a.bookid and a.characterid= ?)"))
-                {       
-                        mysqli_stmt_bind_param($stmt, "i", $cid);
-                        mysqli_stmt_execute($stmt);
-                        mysqli_stmt_bind_result($stmt, $bid,$title);
-                        while(mysqli_stmt_fetch($stmt))
-                        {	
-				array_push($bookIdArray, htmlspecialchars($bid));
-				array_push($bookTitleArray, htmlspecialchars($title));
-			}				
-			mysqli_stmt_close($stmt);
+    {       
+                mysqli_stmt_bind_param($stmt, "i", $cid);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_bind_result($stmt, $bid,$title);
+                while(mysqli_stmt_fetch($stmt))
+                {	
+					array_push($bookIdArray, htmlspecialchars($bid));
+					array_push($bookTitleArray, htmlspecialchars($title));
+				}				
+				mysqli_stmt_close($stmt);
 		     
-		if(sizeof($bookIdArray) ==0)
-		{	
-			header('Location: hw6/index.php?s=3&cid='.$cid);
-	//		appears($db,$cid);
-		}
+				if(sizeof($bookIdArray) ==0)
+				{	
+					header('Location: hw7/index.php?s=3&cid='.$cid);
+			//		appears($db,$cid);
+				}
 		 
 		
 			echo "<div align=center><table>";	
 		     if($s == 8)
 		     {
-			echo "<tr><td>Added ".$cname." to Book ".$bid." </td></tr>";
+				echo "<tr><td>Added ".$cname." to Book ".$bid." </td></tr>";
 		     }
 			echo " <tr><td>Add ".$cname." to Books </td></tr>
                          <form action=add.php method=post>
@@ -387,11 +420,85 @@ else
 	echo "Not a valid Character ID";
 }
 
+function logLogin($db, $user, $msg)
+{
+	$IPAddress = $_SERVER['REMOTE_ADDR'];
+	
+	if($stmt = mysqli_prepare($db,"insert into login set loginid='', ip=?, user=?, action=?, date=NOW()"))
+	{
+		mysqli_stmt_bind_param($stmt, "sss", $IPAddress, $user, $msg);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	}
+	
+	else
+	{
+		echo "Error"; 
+	 	exit;
+	}
+}
+
+function incorrectAttempts($db, $IPAddress)
+{	
+	if($stmt = mysqli_prepare($db,"select count(*) from login where action='failure' and ip=? and date > DATE_SUB(NOW(),INTERVAL 1 HOUR)"))
+	{
+			mysqli_stmt_bind_param($stmt, "s", $IPAddress);
+			mysqli_stmt_execute($stmt);
+			mysqli_stmt_bind_result($stmt, $count);
+			while(mysqli_stmt_fetch($stmt))
+			{
+				 $count = htmlspecialchars($count);
+			}
+			mysqli_stmt_close($stmt);
+  			return $count;
+	}
+	else
+	{
+		echo "Error"; 
+	 	exit;
+	}
+	return 0;
+}
+
+function loginFailureReport()
+{
+	global $db;
+	connect($db);
+	
+	$query = "select ip, count(*) from login where action='failed' GROUP BY ip";
+	
+	if($stmt = mysqli_prepare($db,"select ip, count(*) from login where action='failed' GROUP BY ip"))
+	{				
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $IPAddress, $count);
+		
+		while(mysqli_stmt_fetch($stmt))
+		{
+			$IPAddress = htmlspecialchars($IPAddress);
+			$count = htmlspecialchars($count);
+			echo "<tr><td>$IPAddress<br></td>
+					<td>$count</td></tr>";
+		}
+		
+		mysqli_stmt_close($stmt);
+	}
+	else
+	{
+		echo "Error"; 
+		exit;
+	}
+
+}
 
 function authenticate()
 {
 	global $db,$postUser,$postPass;
+	
 	connect($db);
+	
+	$postUser=mysqli_real_escape_string($db,$postUser);
+	$postPass=mysqli_real_escape_string($db,$postPass);
+	
 	$query="select userid, email, password, salt from users where username=?";
 	if($stmt = mysqli_prepare($db, $query))	
 	{
@@ -413,12 +520,15 @@ function authenticate()
   			$_SESSION['email']=$email;
   			$_SESSION['authenticated']="yes";
   			$_SESSION['ip']=$_SERVER['REMOTE_ADDR'];
+  			
+  			logLogin($db, $postUser, "success");
   		}	
   		else	
   		{	
   			echo "Failed to Login";
-  			header("Location:/hw6/login.php");
-  			exit;
+  			logLogin($db, $postUser, "failure");
+  			header("Location:/hw7/login.php");
+  			
   		}
   	}
 }
