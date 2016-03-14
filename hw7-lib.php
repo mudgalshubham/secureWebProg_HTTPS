@@ -23,8 +23,14 @@ function connect(&$db){
 	$db = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);
 	
 	if(!$db) {
-		print "Error connecting to DB: " . mysqli_connect_error();
+		print "Error connecting DB: " . mysqli_connect_error();
 		exit;
 	}
+}
+
+function whiteList(){
+	$ipAddressArray = array();
+	array_push($ipAddressArray,'128.138.65.95');
+	return $ipAddressArray;
 }
 ?>
