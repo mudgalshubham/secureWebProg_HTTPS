@@ -48,14 +48,15 @@ else
 			logLogin($db, $postUser, "failure");
 			header("Location:/hw7/login.php");		
 		}
-		
-		authenticate($db, $postUser, $postPass);
-		addCharacterMenu($s, $attemptCount, $whiteListIPAddress);
-		
+		else 
+		{
+			authenticate($db, $postUser, $postPass);
+			addCharacterMenu($s);
+		}
 }
 
-function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
-{	global $db, $cname, $side, $race, $cid,$url, $IPAddress ;
+function addCharacterMenu($s)
+{	global $db, $cname, $side, $race, $cid,$url ;
 	switch($s)
 	{
 		case 5: /* $IPAddress = $_SERVER['REMOTE_ADDR']; 
