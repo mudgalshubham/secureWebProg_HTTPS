@@ -37,6 +37,7 @@ else
 		}
 		
 		$IPAddress = $_SERVER['REMOTE_ADDR']; 
+		echo "Ipadd= " .$IPAddress;
 		$whiteListIPAddress = whiteList();
 		$isWhiteListIP = in_array($IPAddress,$whiteListIPAddress);
 		$attemptCount = incorrectAttempts($db,$IPAddress);
@@ -512,7 +513,7 @@ function loginFailureReport()
 	{				
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_bind_result($stmt, $IPAddress, $count);
-		echo "<table border-spacing: 50px 0;><tr>Login Failure Details</tr>
+		echo "<table><tr>Login Failure Details</tr>
 				<tr><td><b>IP Address</b></td>
 					<td><b>Number of Failed Attempts</b></td></tr>";
 		while(mysqli_stmt_fetch($stmt))
