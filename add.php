@@ -56,6 +56,7 @@ function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
 	switch($s)
 	{
 		case 5:  echo "Attempt failure count: ".$attemptCount." IPwhitelist : ".$whiteListIPAddress. "IPadd= ". $_SERVER['REMOTE_ADDR'];
+				echo "whitelist= ". whiteList();
 				if(is_numeric($s)) addCharacterForm(); break;
 
 		case 6:	 if(is_numeric($s)) addCharacterAndPicturesForm(); break;
