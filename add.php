@@ -22,6 +22,7 @@ isset($_REQUEST['bookid'])?$bookid=strip_tags($_REQUEST['bookid']):$bookid="";
 isset($_REQUEST['newuname'])?$newuname=strip_tags($_REQUEST['newuname']):$newuname="";
 isset($_REQUEST['newpass'])?$newpass=strip_tags($_REQUEST['newpass']):$newpass="";
 isset($_REQUEST['email'])?$email=strip_tags($_REQUEST['email']):$email="";
+$IPAddress ='';
 
 connect($db);
 if(isset($_SESSION['authenticated']) && $_SESSION['authenticated']=="yes")
@@ -55,8 +56,13 @@ function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
 {	global $db, $cname, $side, $race, $cid,$url, $IPAddress ;
 	switch($s)
 	{
-		case 5:  echo "Attempt failure count: ".$attemptCount." IPwhitelist : ".$whiteListIPAddress. "IPadd= ". $_SERVER['REMOTE_ADDR'];
-				echo "whitelist= ". whiteList();
+		case 5:  echo "Attempt failure count: ".$attemptCount." IPwhitelist : ".$whiteListIPAddress. "IPadd= ". $IPAddress;
+				$whiteListIPAddress = whiteList();
+				for($i=0; $i <sizeof($whiteListIPAddress); $i++)
+				{
+					echo "whitelist = $whiteListIPAddress[$i]";
+				}
+				
 				if(is_numeric($s)) addCharacterForm(); break;
 
 		case 6:	 if(is_numeric($s)) addCharacterAndPicturesForm(); break;
