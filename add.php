@@ -520,7 +520,7 @@ function loginFailureReport()
 			$IPAddress = htmlspecialchars($IPAddress);
 			$count = htmlspecialchars($count);
 			echo "<tr><td>$IPAddress<br></td>
-					<td>$count</td></tr>";
+					<td>&nbsp&nbsp$count</td></tr>";
 		}
 		echo "</table>";
 		mysqli_stmt_close($stmt);
