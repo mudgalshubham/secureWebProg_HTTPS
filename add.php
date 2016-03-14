@@ -46,10 +46,10 @@ else
 		}
 		
 		authenticate($db, $postUser, $postPass);
-		addCharacterMenu($s, $attemptCount);
+		addCharacterMenu($s, $attemptCount, $whiteListIPAddress);
 }
 
-function addCharacterMenu($s, $attemptCount)
+function addCharacterMenu($s, $attemptCount, $whiteListIPAddress)
 {	global $db, $cname, $side, $race, $cid,$url ;
 	switch($s)
 	{
@@ -64,34 +64,49 @@ function addCharacterMenu($s, $attemptCount)
 
 		case 25: if(is_numeric($s)) addBookForm(); break;		// Here s=25 for first time entry
 
-		case 90: if(isAdmin()) 
-					addUsersForm(); 
-				 else
-				 	echo "User not authorized to use this functionality";
+		case 90: if(is_numeric($s))
+				  {
+					if(isAdmin()) 
+						addUsersForm(); 
+				 	else
+				 		echo "User not authorized to use this functionality";
+				 	}
 				 break;
 		
-		case 91: if(isAdmin()) 
-					addUsers(); 
-				 else
-				 	echo "User not authorized to use this functionality";
+		case 91: if(is_numeric($s))
+				  {
+					if(isAdmin()) 
+						addUsers(); 
+				 	else
+				 		echo "User not authorized to use this functionality";
+				 }
 				 break;
 		
-		case 92: if(isAdmin()) 
-					showUsers(); 
-				 else
-				 	echo "User not authorized to use this functionality";
+		case 92:  if(is_numeric($s))
+				  {
+				  	if(isAdmin()) 
+						showUsers(); 
+				 	else
+				 		echo "User not authorized to use this functionality";
+				  }
 				 break;
 		
-		case 93: if(isAdmin()) 
-					updatePasswordForm(); 
-				 else
-				 	echo "User not authorized to use this functionality";
+		case 93: if(is_numeric($s))
+				  {
+				  	if(isAdmin()) 
+						updatePasswordForm(); 
+				 	else
+				 		echo "User not authorized to use this functionality";
+				 }
 				 break;
 		
-		case 94: if(isAdmin()) 
-					updatePassword(); 
-				 else
-				 	echo "User not authorized to use this functionality";
+		case 94: if(is_numeric($s))
+				  {
+				  	if(isAdmin()) 
+						updatePassword(); 
+				 	else
+				 		echo "User not authorized to use this functionality";
+				   }	
 				 break;
 				 
 		case 95: // Logout
@@ -99,10 +114,13 @@ function addCharacterMenu($s, $attemptCount)
 				 header("Location: /hw7/login.php");
 				 break;
 		
-		case 96: if(isAdmin())
-					loginFailureReport();
-				 else
-				 	echo "User not authorized to use this functionality";
+		case 96: if(is_numeric($s))
+				  {
+				  	if(isAdmin())
+						loginFailureReport();
+				 	else
+				 		echo "User not authorized to use this functionality";
+				  }
 				 break;
 				 
 		default: addCharacterForm(); break;
@@ -462,6 +480,7 @@ function logLogin($db, $user, $msg)
 
 function incorrectAttempts($db, $IPAddress)
 {	
+	connect($db);
 	if($stmt = mysqli_prepare($db,"select count(*) from login where action='failure' and ip=? and date > DATE_SUB(NOW(),INTERVAL 1 HOUR)"))
 	{
 			mysqli_stmt_bind_param($stmt, "s", $IPAddress);
