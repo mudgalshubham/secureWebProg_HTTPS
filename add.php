@@ -512,7 +512,7 @@ function loginFailureReport()
 	{				
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_bind_result($stmt, $IPAddress, $count);
-		
+		echo "<table>";
 		while(mysqli_stmt_fetch($stmt))
 		{
 			$IPAddress = htmlspecialchars($IPAddress);
@@ -520,7 +520,7 @@ function loginFailureReport()
 			echo "<tr><td>$IPAddress<br></td>
 					<td>$count</td></tr>";
 		}
-		
+		echo "</table>";
 		mysqli_stmt_close($stmt);
 	}
 	else
