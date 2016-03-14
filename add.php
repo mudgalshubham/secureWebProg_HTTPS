@@ -469,13 +469,15 @@ function logLogin($db, $user, $msg)
 		mysqli_stmt_bind_param($stmt, "sss", $IPAddress, $user, $msg);
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
+		
 	}
 	
 	else
 	{
 		echo "Error"; 
-	 	exit;
+	 	
 	}
+	return;
 }
 
 function incorrectAttempts($db, $IPAddress)
@@ -506,9 +508,7 @@ function loginFailureReport()
 	global $db;
 	connect($db);
 	
-	$query = "select ip, count(*) from login where action='failed' GROUP BY ip";
-	
-	if($stmt = mysqli_prepare($db,"select ip, count(*) from login where action='failed' GROUP BY ip"))
+	if($stmt = mysqli_prepare($db,"select ip, count(*) from login where action='failure' GROUP BY ip"))
 	{				
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_bind_result($stmt, $IPAddress, $count);
